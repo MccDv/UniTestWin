@@ -450,6 +450,7 @@ Private Sub InitPlot(Chans As Integer)
 
    MenusLoaded% = frmPlot.mnuCursChan.Count - 1
    Chans = mnLastChan
+   If mnChansSelected = 0 Then mnChansSelected = 1
    If (Not (Chans < 0)) And (Chans < MenusLoaded%) Then
       For i% = MenusLoaded% To Chans + 1 Step -1
          Unload frmPlot.mnuCursChan(i%)
@@ -1659,11 +1660,11 @@ Private Sub ScalePlot()
          If (mnTransferType = RealArray) Or mnConvToEng Or mnScaled Then
             If stLastBin = mvFirstBin Then
                'Margin = stLastBin + 2
-               frmPlot.picPlot.ScaleHeight = -4
-               frmPlot.picPlot.ScaleTop = stLastBin + 2
+               frmPlot.picPlot.ScaleHeight = -1 * (PlotMax! - PlotMin!) '-4
+               frmPlot.picPlot.ScaleTop = PlotMax! 'mvFirstBin + (mvFirstBin * 0.05)   'stLastBin + 2
             Else
                frmPlot.picPlot.ScaleHeight = -1 * (stLastBin - mvFirstBin) 'LastBin
-               frmPlot.picPlot.ScaleTop = stLastBin - mvFirstBin  'stLastBin replaced LastBin
+               frmPlot.picPlot.ScaleTop = (stLastBin - mvFirstBin)  'stLastBin replaced LastBin
             End If
          Else
             Select Case stLastBin
@@ -1740,12 +1741,14 @@ EvalData:
       FirstChan% = mnChanSet
       LastChan% = mnChanSet
    End If
-   NumChans% = mnLastChan + 1
+   NumChans% = mnChansSelected '- 1   'mnLastChan + 1
    ReDim HistBins(0) As Long
    MinBin = 2 ^ 32 '65535
+   MaxBin = -1 * 2 ^ 24
    NumBins& = 0
    BinCount& = 65535
-   For Chan% = FirstChan% To LastChan%
+   For CurChan% = 0 To NumChans% - 1
+      Chan% = manChans(CurChan%)
       If mnPlotType = PLOT_CHUNKS Then
          NumberOfPoints = (mlNumChunks) '- 1  \ NumChans%
       Else
@@ -1765,20 +1768,25 @@ EvalData:
       If NumberOfPoints > 0 Then BinCount& = BinData(Chan%, mvPlot, FirstBin, _
       LargestBin, LargestBinCode, HistBins(), Divisor%, Average, NumberOfPoints)
       If (mnTransferType = RealArray) Or mnConvToEng Or mnScaled Then
-         If Abs(LargestBin) > Abs(LastBin) Then LastBin = LargestBin
+         'If Abs(LargestBin) > Abs(LastBin) Then LastBin = LargestBin
+         'Spread = Abs(Average - LargestBinCode)
+         'Temp = Average - Spread
+         If (MinBin >= 2 ^ 32) Or (FirstBin < MinBin) Then MinBin = FirstBin
+         'Temp = Average + Spread
+         If (MaxBin <= (-1 * (2 ^ 24))) Or (LargestBin > MaxBin) Then MaxBin = LargestBin
       Else
          CurLast = BinCount& + FirstBin - 1
          If CurLast > LastBin Then LastBin = CurLast
+         If (FirstBin < MinBin) Or (IsEmpty(MinBin)) Then MinBin = FirstBin
+         If (LastBin > MaxBin) Or (IsEmpty(MaxBin)) Then MaxBin = LastBin
       End If
-      If (FirstBin < MinBin) Or (IsEmpty(MinBin)) Then MinBin = FirstBin
-      If (LastBin > MaxBin) Or (IsEmpty(MaxBin)) Then MaxBin = LastBin
-   Next Chan%
+   Next CurChan%
    PlotBuf = 0.005
-   NewBuf = (MaxBin - MinBin) * 0.05
+   NewBuf = (MaxBin - MinBin) * 0.2
    If (NewBuf > PlotBuf) Or (BinCount& = 1) Then PlotBuf = NewBuf
    MaxBin = MaxBin + PlotBuf
    MinBin = MinBin - PlotBuf
-   If BinCount& > 65535 Then
+   If BinCount& > 65534 Then
       NumBins& = 65535
    Else
       NumBins& = MaxBin - MinBin
@@ -1859,8 +1867,10 @@ End Sub
 
 Sub SetChannel(Chan As Integer)
 
+   PlotChans% = frmPlot.mnuOneChan.Count - 1
    If Chan > mnLastChan Then Exit Sub
    If mnDefaultWidth = 0 Then mnDefaultWidth = frmPlot.picPlot.ScaleWidth
+   '-1 is all channels from menu
    If Chan = -2 Then
       If Not mnChansInitialized Then
          Chan = mnChanSet
@@ -1870,35 +1880,35 @@ Sub SetChannel(Chan As Integer)
       End If
    End If
    
-   PlotChans% = frmPlot.mnuOneChan.Count - 1
-   For ChanMenu% = 0 To PlotChans%
-      If frmPlot.mnuOneChan(ChanMenu%).Checked Then
-         If Chan = ChanMenu% Then
-            If mnChansSelected > 1 Then frmPlot.mnuOneChan(ChanMenu%).Checked = False
-         Else
-            ReDim Preserve manChans(ChansSelected%)
-            manChans(ChansSelected%) = ChanMenu%
-            ChansSelected% = ChansSelected% + 1
-         End If
-      Else
-         If ChanMenu% = Chan Then
-            ReDim Preserve manChans(ChansSelected%)
-            manChans(ChansSelected%) = ChanMenu%
-            ChansSelected% = ChansSelected% + 1
-            frmPlot.mnuOneChan(ChanMenu%).Checked = True
-         End If
-      End If
-   Next
-   frmPlot.mnuAllChans.Checked = False
-   
-   If (Chan = -1) Or (ChansSelected% > PlotChans%) Then
+   If (Chan = -1) Then  'Or (PlotChans% >= ChansSelected%)
       ReDim manChans(mnLastChan)
       For ChanMenu% = 0 To PlotChans%
          frmPlot.mnuOneChan(ChanMenu%).Checked = False
          manChans(ChanMenu%) = ChanMenu%
       Next
       Chan = -1
+      ChansSelected% = mnLastChan + 1
+   Else
+      For ChanMenu% = 0 To PlotChans%
+         If frmPlot.mnuOneChan(ChanMenu%).Checked Then
+            If Chan = ChanMenu% Then
+               If mnChansSelected > 1 Then frmPlot.mnuOneChan(ChanMenu%).Checked = False
+            Else
+               ReDim Preserve manChans(ChansSelected%)
+               manChans(ChansSelected%) = ChanMenu%
+               ChansSelected% = ChansSelected% + 1
+            End If
+         Else
+            If ChanMenu% = Chan Then
+               ReDim Preserve manChans(ChansSelected%)
+               manChans(ChansSelected%) = ChanMenu%
+               ChansSelected% = ChansSelected% + 1
+               frmPlot.mnuOneChan(ChanMenu%).Checked = True
+            End If
+         End If
+      Next
    End If
+   frmPlot.mnuAllChans.Checked = False
    
    mnChanSet = Chan
    If mnChanSet = -1 Then

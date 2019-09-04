@@ -67,7 +67,12 @@ Dim msBoardName As String
 
 Function BinData(Chan As Integer, DatArray As Variant, FirstBin As Variant, LargestBin As Variant, LargestBinCode As Variant, HistBins() As Long, Divisor As Integer, Average As Variant, Optional NumberOfPoints As Variant) As Long
 
-   FirstPoint& = FirstBin
+   Dim CurValue As Variant
+   Multiplier& = 1
+   'If (VarType(DatArray(0, 0)) > 3) Then
+   '   Multiplier& = 1000
+   'End If
+   FirstPoint& = FirstBin * Multiplier&
    MinBin = 2 ^ 48 '65535.5
    MaxBin = -65535.5
    LargestBin = 0
@@ -79,15 +84,16 @@ Function BinData(Chan As Integer, DatArray As Variant, FirstBin As Variant, Larg
    End If
    ArrayElements = -1
    For i& = FirstPoint& To (FirstPoint& + ArraySize)
-      If Not (IsEmpty(DatArray(Chan, i&))) Then
-         If DatArray(Chan, i&) < MinBin Then
-            MinBin = DatArray(Chan, i&)
+      CurValue = DatArray(Chan, i&) * Multiplier&
+      If Not (IsEmpty(CurValue)) Then
+         If CurValue < MinBin Then
+            MinBin = CurValue
          End If
-         If DatArray(Chan, i&) > MaxBin Then
-            MaxBin = DatArray(Chan, i&)
+         If CurValue > MaxBin Then
+            MaxBin = CurValue
          End If
          ArrayElements = ArrayElements + 1
-         TotalCounts = TotalCounts + DatArray(Chan, i&)
+         TotalCounts = TotalCounts + CurValue
       End If
    Next i&
    Average = TotalCounts / (ArraySize + 1)
@@ -131,7 +137,8 @@ Function BinData(Chan As Integer, DatArray As Variant, FirstBin As Variant, Larg
       End If
       If CalculateBins% Then
          For i& = FirstPoint& To FirstPoint& + ArrayElements
-            Element& = (DatArray(Chan, i&) - MinBin) / Divisor
+            CurValue = DatArray(Chan, i&) * Multiplier&
+            Element& = (CurValue - MinBin) / Divisor
             HistBins(Element&) = HistBins(Element&) + 1
          Next i&
          For i& = 0 To TotalBins&
@@ -143,6 +150,7 @@ Function BinData(Chan As Integer, DatArray As Variant, FirstBin As Variant, Larg
       End If
       BinData = NumBins&
    End If
+   If (VarType(DatArray(0, 0)) > 3) Then LargestBin = MaxBin
 
 End Function
 
