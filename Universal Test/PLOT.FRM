@@ -239,6 +239,13 @@ Begin VB.Form frmPlot
       Caption         =   "&Channel"
       Begin VB.Menu mnuChPlot 
          Caption         =   "Plot"
+         Begin VB.Menu mnuChanUnselect 
+            Caption         =   "Un&select Chan"
+            Shortcut        =   ^S
+         End
+         Begin VB.Menu mnuSep0 
+            Caption         =   "-"
+         End
          Begin VB.Menu mnuAllChans 
             Caption         =   "&All (Ctl A)"
             Checked         =   -1  'True
@@ -410,8 +417,10 @@ Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
    If (Shift And 6) = 6 Then  'if Ctl-Alt keys
       Select Case KeyCode
          Case 48 To 57
-            'if a number from 0 to 0
-            Ch% = Val(Chr$(KeyCode))
+            'if a number from 0 to 9
+            PlusTen = 0
+            If (Shift And 1) = 1 Then PlusTen = 10
+            Ch% = Val(Chr$(KeyCode)) + PlusTen
             mnuCursChan_Click (Ch%)
          Case 73  '"i" - buffer info
             ReturnToOwner
@@ -427,7 +436,14 @@ Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
          Case Asc("'")
             mfmUniTest.cmdFormType(6) = True
          Case 48 To 57
-            Ch% = Val(Chr$(KeyCode))
+            PlusTen = 0
+            If (Shift And 1) = 1 Then PlusTen = 10
+            Ch% = Val(Chr$(KeyCode)) + PlusTen
+            mnuOneChan_Click (Ch%)
+         Case 96 To 105
+            PlusTen = 20
+            'If (Shift And 1) = 1 Then PlusTen = 30
+            Ch% = (KeyCode - 96) + PlusTen
             mnuOneChan_Click (Ch%)
          Case Asc("A")
             mnuAllChans_Click
@@ -576,6 +592,12 @@ Private Sub mnuBlockSize_Click()
       End If
    End If
    mbHandleMouseEvent = True
+   
+End Sub
+
+Private Sub mnuChanUnselect_Click()
+
+   mnuChanUnselect.Checked = Not mnuChanUnselect.Checked
    
 End Sub
 

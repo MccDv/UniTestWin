@@ -153,6 +153,7 @@ Dim mlEvalStart As Long, mlEvalPoints As Long, mlEvalDeltaVal As Long
 Dim mlEvalMinVal As Long, mlEvalMaxVal As Long, mlEvalDeltaMinVal As Long
 Dim mlMsgBoxSamps As Long, mlWindowDef As Long
 Dim mfTickSize As Single
+Dim mbSelectChan As Boolean
 
 Sub CalcNoise(TrueFalse As Integer)
 
@@ -464,8 +465,24 @@ Private Sub InitPlot(Chans As Integer)
       For i% = MenusLoaded% + 1 To Chans
          Load frmPlot.mnuCursChan(i%)
          Load frmPlot.mnuOneChan(i%)
-         frmPlot.mnuCursChan(i%).Caption = "Ch" & i% & " (Ctl-Alt " & i% & ")"
-         frmPlot.mnuOneChan(i%).Caption = "Ch" & i% & " (Ctl " & i% & ")"
+         AddShift$ = " "
+         ShiftOffset% = 0
+         If i% > 9 Then
+            If i% > 19 Then
+               AddShift$ = "-Kpd "
+               ShiftOffset% = 20
+            Else
+               AddShift$ = "-Sh "
+               ShiftOffset% = 10
+            End If
+         End If
+         If i% > 29 Then
+            frmPlot.mnuCursChan(i%).Caption = "Ch" & i%
+            frmPlot.mnuOneChan(i%).Caption = "Ch" & i%
+         Else
+            frmPlot.mnuCursChan(i%).Caption = "Ch" & i% & " (Ctl-Alt" & AddShift$ & i% - ShiftOffset% & ")"
+            frmPlot.mnuOneChan(i%).Caption = "Ch" & i% & " (Ctl" & AddShift$ & i% - ShiftOffset% & ")"
+         End If
          frmPlot.mnuCursChan(i%).Checked = False
          frmPlot.mnuOneChan(i%).Checked = False
       Next
@@ -1756,6 +1773,7 @@ EvalData:
          If mlEndBlock < Samps& Then Samps& = mlEndBlock
          NumberOfPoints = Samps& - (Samps& Mod NumChans%)
       End If
+      If NumberOfPoints = 0 Then NumberOfPoints = 1
       FirstBin = mlFirstPoint
       'If mlStartBlock = 0 Then FirstBin = mlFirstPoint
       If ((NumberOfPoints + FirstBin) > mlPerChan) Then
@@ -1783,7 +1801,9 @@ EvalData:
    Next CurChan%
    PlotBuf = 0.005
    NewBuf = (MaxBin - MinBin) * 0.2
-   If (NewBuf > PlotBuf) Or (BinCount& = 1) Then PlotBuf = NewBuf
+   If NewBuf > 0 Then
+      If (NewBuf > PlotBuf) Or (BinCount& = 1) Then PlotBuf = NewBuf
+   End If
    MaxBin = MaxBin + PlotBuf
    MinBin = MinBin - PlotBuf
    If BinCount& > 65534 Then
@@ -1867,6 +1887,7 @@ End Sub
 
 Sub SetChannel(Chan As Integer)
 
+   mbSelectChan = Not frmPlot.mnuChanUnselect.Checked
    PlotChans% = frmPlot.mnuOneChan.Count - 1
    If Chan > mnLastChan Then Exit Sub
    If mnDefaultWidth = 0 Then mnDefaultWidth = frmPlot.picPlot.ScaleWidth
@@ -1880,6 +1901,7 @@ Sub SetChannel(Chan As Integer)
       End If
    End If
    
+   ReDim manChans(0)
    If (Chan = -1) Then  'Or (PlotChans% >= ChansSelected%)
       ReDim manChans(mnLastChan)
       For ChanMenu% = 0 To PlotChans%
@@ -1889,24 +1911,51 @@ Sub SetChannel(Chan As Integer)
       Chan = -1
       ChansSelected% = mnLastChan + 1
    Else
-      For ChanMenu% = 0 To PlotChans%
-         If frmPlot.mnuOneChan(ChanMenu%).Checked Then
-            If Chan = ChanMenu% Then
-               If mnChansSelected > 1 Then frmPlot.mnuOneChan(ChanMenu%).Checked = False
+      If mbSelectChan Then
+         For ChanMenu% = 0 To PlotChans%
+            If frmPlot.mnuOneChan(ChanMenu%).Checked Then
+               If Chan = ChanMenu% Then
+                  If mnChansSelected > 1 Then frmPlot.mnuOneChan(ChanMenu%).Checked = False
+                  frmPlot.mnuAllChans.Checked = False
+               Else
+                  ReDim Preserve manChans(ChansSelected%)
+                  manChans(ChansSelected%) = ChanMenu%
+                  frmPlot.mnuOneChan(ChanMenu%).Checked = True
+                  ChansSelected% = ChansSelected% + 1
+               End If
             Else
-               ReDim Preserve manChans(ChansSelected%)
-               manChans(ChansSelected%) = ChanMenu%
-               ChansSelected% = ChansSelected% + 1
+               If ChanMenu% = Chan Then
+                  ReDim Preserve manChans(ChansSelected%)
+                  manChans(ChansSelected%) = ChanMenu%
+                  ChansSelected% = ChansSelected% + 1
+                  frmPlot.mnuOneChan(ChanMenu%).Checked = True
+               End If
             End If
-         Else
-            If ChanMenu% = Chan Then
-               ReDim Preserve manChans(ChansSelected%)
-               manChans(ChansSelected%) = ChanMenu%
-               ChansSelected% = ChansSelected% + 1
-               frmPlot.mnuOneChan(ChanMenu%).Checked = True
+         Next
+      Else
+         For ChanMenu% = 0 To PlotChans%
+            If frmPlot.mnuOneChan(ChanMenu%).Checked Then
+               If Chan = ChanMenu% Then
+                  If mnChansSelected > 1 Then frmPlot.mnuOneChan(ChanMenu%).Checked = False
+                  frmPlot.mnuAllChans.Checked = False
+               Else
+                  ReDim Preserve manChans(ChansSelected%)
+                  manChans(ChansSelected%) = ChanMenu%
+                  frmPlot.mnuOneChan(ChanMenu%).Checked = True
+                  ChansSelected% = ChansSelected% + 1
+               End If
+            Else
+               If ChanMenu% = Chan Then
+                  frmPlot.mnuOneChan(ChanMenu%).Checked = False
+               Else
+                  ReDim Preserve manChans(ChansSelected%)
+                  manChans(ChansSelected%) = ChanMenu%
+                  ChansSelected% = ChansSelected% + 1
+                  frmPlot.mnuOneChan(ChanMenu%).Checked = True
+               End If
             End If
-         End If
-      Next
+         Next
+      End If
    End If
    frmPlot.mnuAllChans.Checked = False
    
