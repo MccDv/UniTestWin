@@ -869,8 +869,13 @@ Private Sub picPlot_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             'If x > 2147483647 Then x = CLng(SampValue# - 2 ^ 32)
             lblAmpl.Caption = SampValue
          Else
-            If InStr(1, SampString$, ".") > 0 _
-            Then SampString$ = Format(SampValue, "0.0###")
+            If InStr(1, SampString$, ".") > 0 Then
+               If SampValue < 0.01 Then
+                  SampString$ = Format(SampValue * 1000, "0.0###mV")
+               Else
+                  SampString$ = Format(SampValue, "0.0###")
+               End If
+            End If
             lblAmpl.Caption = SampString$
          End If
       End If

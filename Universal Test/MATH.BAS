@@ -80,7 +80,7 @@ Function BinData(Chan As Integer, DatArray As Variant, FirstBin As Variant, Larg
    If IsMissing(NumberOfPoints) Then
       ArraySize = UBound(DatArray, 2) ' - 1
    Else
-      ArraySize = NumberOfPoints '- 1
+      ArraySize = NumberOfPoints - 1
    End If
    ArrayElements = -1
    For i& = FirstPoint& To (FirstPoint& + ArraySize)
