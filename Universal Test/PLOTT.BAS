@@ -277,6 +277,7 @@ End Sub
 Sub FormLoading()
 
    mnPlotFormsLoaded = mnPlotFormsLoaded + 1
+   mnUnitCode = 0
 
 End Sub
 
@@ -2073,6 +2074,7 @@ Sub SetDetails(FunctionType As Integer, Param1 As Variant, Param2 As Variant, Pa
          If IsNumeric(Param5) Then
             RangeVal% = Val(Param5)
             ScaleString$ = Choose(RangeVal% + 1, "Celsius", "Fahrenheit", "Kelvin", "", "Volts", "No Scale")
+            frmPlot.SetUnit RangeVal% + 1
          Else
             ScaleString$ = Param5
          End If

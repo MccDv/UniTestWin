@@ -386,7 +386,8 @@ Dim mbHandleMouseEvent As Integer, mnLastChan As Integer
 Dim mRefPoint As Integer, mnShowDiff As Integer, mnDetails As Integer
 Dim mnCursorChan As Integer, mnTitleType As Integer
 Dim mnBlocksEnabled As Integer, mnRetainPlot As Integer
-Dim mnSavedRes As Integer
+Dim mnSavedRes, mnUnitCode As Integer
+Dim msUnit As String
 
 Private Sub Form_Activate()
 
@@ -870,10 +871,14 @@ Private Sub picPlot_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             lblAmpl.Caption = SampValue
          Else
             If InStr(1, SampString$, ".") > 0 Then
-               If SampValue < 0.01 Then
-                  SampString$ = Format(SampValue * 1000, "0.0###mV")
+               If mnUnitCode = 4 Then
+                  If SampValue < 0.01 Then
+                     SampString$ = Format(SampValue * 1000, "0.0###mV")
+                  Else
+                     SampString$ = Format(SampValue, "0.0###V")
+                  End If
                Else
-                  SampString$ = Format(SampValue, "0.0###")
+                  SampString$ = Format(SampValue, "0.0###" & msUnit)
                End If
             End If
             lblAmpl.Caption = SampString$
@@ -1015,3 +1020,24 @@ Public Sub ShowText(TrueOrFalse As Boolean)
       Then mnuWindow_Click
       
 End Sub
+
+Public Sub SetUnit(UnitCode As Integer)
+
+   mnUnitCode = UnitCode
+   Select Case UnitCode
+      Case 0
+         msUnit = ""
+      Case 1
+         msUnit = "°C"
+      Case 2
+         msUnit = "°F"
+      Case 3
+         msUnit = "K"
+      Case 4
+         msUnit = "V"
+      Case Else
+         msUnit = ""
+   End Select
+   
+End Sub
+

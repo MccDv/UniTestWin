@@ -6503,6 +6503,13 @@ Private Sub mnuFuncArray_Click(Index As Integer)
    mnuScale(0).ENABLED = FloatType% Or mnIOTFunc Or mnTempSupport
    mnuScale(1).ENABLED = FloatType% Or mnIOTFunc Or mnTempSupport
    mnuScale(2).ENABLED = FloatType% Or mnIOTFunc Or mnTempSupport
+   frmPlot.SetUnit 0
+   If (mnFuncType = TIn) Or (mnFuncType = TInScan) Then
+      frmPlot.SetUnit 1
+   ElseIf FloatType% Then
+      frmPlot.SetUnit 4
+   End If
+   
    'If (mnFuncType = APretrig) And (mvOptions And EXTMEMORY) Then
    '   Obsolete EXTMEMORY replaced with NOCLEAR
    '   MsgBox "The MegaFifo must be fully populated to use cbAPretrigger() with the EXTMEMORY option."
@@ -7018,6 +7025,7 @@ Private Sub mnuScale_Click(Index As Integer)
    NewSelection% = Switch(mnScale = CELSIUS, 0, mnScale = FAHRENHEIT, 1, _
    mnScale = KELVIN, 2, mnScale = VOLTS, 3, mnScale = NOSCALE, 4, mnScale = RAW, 5)
    mnuScale(NewSelection%).Checked = True
+   frmPlot.SetUnit Index + 1
    mnDetailsNeedUpdate = True
    'If mnScale = RAW Then
       SetOptions
