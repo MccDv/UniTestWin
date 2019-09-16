@@ -81,6 +81,7 @@ Function BinData(Chan As Integer, DatArray As Variant, FirstBin As Variant, Larg
       ArraySize = UBound(DatArray, 2) ' - 1
    Else
       ArraySize = NumberOfPoints '- 1
+      If ArraySize > UBound(DatArray, 2) Then ArraySize = UBound(DatArray, 2)
    End If
    ArrayElements = -1
    For i& = FirstPoint& To (FirstPoint& + ArraySize)

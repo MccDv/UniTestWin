@@ -1409,6 +1409,11 @@ Private Sub PrintText()
    If (FirstPoint& + mlTextCount) < LastPoint& Then LastPoint& = (FirstPoint& + mlTextCount) - 1
    
    'Resolution% = GetFormProperty("resolution")
+   Dim mbTC As Boolean
+   mbTC = False
+   If InStr(1, msDetail, "cbTIn()") <> 0 Then
+      mbTC = True
+   End If
    For i& = FirstPoint& To LastPoint&
       TextString$ = TextString$ & (i&) * (mnLastChan + 1) & Chr$(9)
       If (mnTransferType = RealArray) Or mnFloat Or mnConvToEng Then
@@ -1425,16 +1430,20 @@ Private Sub PrintText()
             If InfoRetrieved Then
                TextString$ = TextString$ & TCInfo$ & Chr$(9)
             Else
-               If mfTickSize = 0 Then
-                  If Abs(mvPlot(Ch%, i&)) > 999 Then
-                     TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+.000E+00;-.000E+00") & Chr$(9)
-                  ElseIf Abs(mvPlot(Ch%, i&)) < 0.0001 Then
-                     TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+0.000E+00;-0.000E+00") & Chr$(9)
-                  Else
-                     TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+##0.0000000;-##0.0000000") & Chr$(9)
-                  End If
+               If mbTC Then
+                  TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+0.0000;-0.0000") & Chr$(9)
                Else
-                  TextString$ = TextString$ & Format$(mvPlot(Ch%, i&) * 1000, "+0.0000000;-0.0000000") & Chr$(9)
+                  If mfTickSize = 0 Then
+                     If Abs(mvPlot(Ch%, i&)) > 999 Then
+                        TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+.000E+00;-.000E+00") & Chr$(9)
+                     ElseIf Abs(mvPlot(Ch%, i&)) < 0.0001 Then
+                        TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+0.000E+00;-0.000E+00") & Chr$(9)
+                     Else
+                        TextString$ = TextString$ & Format$(mvPlot(Ch%, i&), "+##0.0000000;-##0.0000000") & Chr$(9)
+                     End If
+                  Else
+                     TextString$ = TextString$ & Format$(mvPlot(Ch%, i&) * 1000, "+0.0000000;-0.0000000") & Chr$(9)
+                  End If
                End If
             End If
          Next Ch%
