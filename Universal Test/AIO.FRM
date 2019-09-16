@@ -3157,10 +3157,10 @@ Private Sub cmdGo_Click()
    Else
       '9 chars prevents overflow error
       TCount& = Val(Left(txtCount.Text, 9))
-      If TCount& < NumChans% Then
-         MsgBox "Total samples must be at least equal to number of channels (" & NumChans% & ")", vbCritical, "Total Samples < NumChans"
-         Exit Sub
-      End If
+      'If TCount& < NumChans% Then
+      '   MsgBox "Total samples must be at least equal to number of channels (" & NumChans% & ")", vbCritical, "Total Samples < NumChans"
+      '   Exit Sub
+      'End If
       mlCount = TCount&
       If (mnFuncType = TInScan) Or _
          (mnFuncType = TIn) Then _
