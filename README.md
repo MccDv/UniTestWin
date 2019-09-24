@@ -12,6 +12,8 @@ Requires **Microsoft Visual Basic 6** for development.
 
 Requires **VB Runtime** for execution.
 
+### Cloning:
+---------------
 Install the Measurement Computing Universal Library. For development, create a directory under the **Measurement Computing** directory called **UniTestWin**. Depending on the version of Windows, the **Measurement Computing** directory will be in either the **'Public Documents'** or **'Program Files (x86)'** directory.
 
 
