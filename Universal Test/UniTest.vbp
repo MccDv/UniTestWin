@@ -1,7 +1,5 @@
 Type=Exe
 Reference=*\G{D238D4F7-9364-455F-BFC4-1660CA2D6235}#1.0#0#..\..\FileStorage\MBDClass.tlb#MBDClass
-Object={BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0; TABCTL32.OCX
-Object={5E9E78A0-531B-11CF-91F6-C2863C385E30}#1.0#0; MSFLXGRD.OCX
 Form=UNITEST.FRM
 Module=LIBINFO; LIBINFO.BAS
 Module=LOCINFO; LOCINFO.BAS
@@ -54,6 +52,8 @@ Module=ULDiscovery; ULDiscovery.bas
 Module=ULUtils; ..\..\ULUtilitiesSource\ULUtils.bas
 Form=frmDiscovery.frm
 Module=CBW; ..\..\DAQ\VBWIN\CBW.BAS
+Object={BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0; TABCTL32.OCX
+Object={5E9E78A0-531B-11CF-91F6-C2863C385E30}#1.0#0; MSFLXGRD.OCX
 IconForm="mfmUniTest"
 Startup="Sub Main"
 HelpFile=""
