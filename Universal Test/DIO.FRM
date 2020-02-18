@@ -1443,7 +1443,7 @@ Private Sub cmdClearAlarm_Click()
       x% = SaveFunc(Me, DClearAlarm, ULStat, mnBoardNum, _
          mnPortNum, Mask&, A4, A5, A6, A7, A8, A9, A10, A11, 0)
       If ULStat = BADPORTNUM Then
-         PortName$ = GetPortString(mnPortNum)
+         PortName$ = GetPortStringEx(mnPortNum)
          MsgBox "Selected port is " & PortName$ & _
             ". Select the appropriate port using the Menu " & _
             "'Function/cbDConfigPort' for this window.", _
@@ -3360,7 +3360,7 @@ Private Sub hsbPort_Change()
       CurPort& = hsbPort.value - 1
       lblPort.Caption = " DIO{" & Format(CurPort&, "0\}")
    Else
-      lblPort.Caption = " " & GetPortString(mnPortNum)
+      lblPort.Caption = " " & GetPortStringEx(mnPortNum)
    End If
    ShowConfigStat
 
@@ -4489,7 +4489,7 @@ Private Sub picDIO_MouseMove(Button As Integer, Shift As Integer, x As Single, y
    Else
       PortNum% = Port% + 10
       BitNum% = GetBitNum(Bit%, PortNum%, PortIndex%)
-      lblStatus.Caption = msConfig & "   " & GetPortString(PortNum%) & ", Bit " & Int(y)
+      lblStatus.Caption = msConfig & "   " & GetPortStringEx(PortNum%) & ", Bit " & Int(y)
       lblStatus.Caption = lblStatus.Caption & " (FIRSTPORTA bit " & BitNum% & ")" & ",  " & masConfig(mnDIOPort(PortIndex%, mnBoardIndex))
    End If
    
@@ -4583,7 +4583,7 @@ Private Sub ShowConfigStat()
 
    PortIndex% = hsbPort.value - 1
    If mnPortIndex <> PortIndex% Then
-      lblStatus.Caption = Left$(msConfig, Len(msConfig) - 1) & GetPortString(mnPortNum) & ", INVALIDPORT)"
+      lblStatus.Caption = Left$(msConfig, Len(msConfig) - 1) & GetPortStringEx(mnPortNum) & ", INVALIDPORT)"
    Else
       GridCol% = 0
       Do
@@ -4600,7 +4600,7 @@ Private Sub ShowConfigStat()
       PortStat% = DGrid(0, GridCol%).PortType
       'If Not (DGrid(0, GridCol%).PortNum = mnPortNum) Then PortStat% = 5
       End If
-      lblStatus.Caption = msStringID & Left$(msConfig, Len(msConfig) - 1) & GetPortString(mnPortNum) & ", " & masConfig(PortStat%) & ")"
+      lblStatus.Caption = msStringID & Left$(msConfig, Len(msConfig) - 1) & GetPortStringEx(mnPortNum) & ", " & masConfig(PortStat%) & ")"
    End If
 
 End Sub
@@ -5581,7 +5581,7 @@ Public Sub WriteSelectedBits(NumberOfBlocks As Long)
          Else
             ULBitPort& = AUXPORT
             If PortType& > 1 Then ULBitPort& = FIRSTPORTA
-            PortName$ = GetPortString(PortType&)
+            PortName$ = GetPortStringEx(PortType&)
          End If
          If (Port% Mod 4 = 0) Then
             txtScript.Text = txtScript.Text & vbCrLf & _
@@ -5687,7 +5687,7 @@ Public Sub WriteSelectedPorts(NumberOfBlocks As Long)
          Else
             ULStat = cbDOut(mnBoardNum, PortType&, DataValue%)
             If SaveFunc(Me, DOut, ULStat, mnBoardNum, PortType&, DataValue%, A4, A5, A6, A7, A8, A9, A10, A11, 0) Then Exit Sub
-            PortName$ = GetPortString(PortType&)
+            PortName$ = GetPortStringEx(PortType&)
          End If
          If Port% Mod 4 = 0 Then txtScript.Text = txtScript.Text & vbCrLf
          txtScript.Text = txtScript.Text & PortName$ & "  " & _
@@ -5758,7 +5758,7 @@ Public Sub ReadSelectedBits(NumberOfBlocks As Long)
          If mnLibType = MSGLIB Then
             PortName$ = "PORTINDEX" & Format(PortType&, "0")
          Else
-            PortName$ = GetPortString(PortType&)
+            PortName$ = GetPortStringEx(PortType&)
             ULBitPort& = AUXPORT
             If PortType& > 1 Then ULBitPort& = FIRSTPORTA
          End If
@@ -5875,7 +5875,7 @@ Public Sub ReadSelectedPorts(NumberOfBlocks As Long)
             ULStat = cbDIn(mnBoardNum, PortType&, DataValue%)
             If SaveFunc(Me, DIn, ULStat, mnBoardNum, PortType&, DataValue%, A4, A5, A6, A7, A8, A9, A10, A11, 0) Then Exit Sub
             PortData(Port%, Sample&) = IntValToULong(DataValue%)
-            PortName$ = GetPortString(PortType&)
+            PortName$ = GetPortStringEx(PortType&)
             PortValString$ = Format(DataValue% And Maskval&, "0")
          End If
          If Port% Mod 4 = 0 Then txtScript.Text = txtScript.Text & vbCrLf
@@ -6783,7 +6783,7 @@ Public Sub InitDGrid()
             DGrid(GridBit&, Port& + GridPortOffset&).PortType = PortStatus& 'input, output or other
             DGrid(GridBit&, Port& + GridPortOffset&).PortNum = PortType&    'AUXPORT, FIRSTPORTA, etc
             DGrid(GridBit&, Port& + GridPortOffset&).BitNum = Bit& + BitOffset& 'bit within PortType
-            DGrid(GridBit&, Port& + GridPortOffset&).PortName = GetPortString(PortType&)
+            DGrid(GridBit&, Port& + GridPortOffset&).PortName = GetPortStringEx(PortType&)
             CurDir& = PortStatus&
             If ParseBitField% Then
                CurDir& = DIGITALOUT
@@ -7067,7 +7067,7 @@ Private Sub ScanSelectedOutPorts(NumberOfBlocks As Long)
    Else
       ULStat = cbDOut(mnBoardNum, PortType&, DataValue%)
       If SaveFunc(Me, DOut, ULStat, mnBoardNum, PortType&, DataValue%, A4, A5, A6, A7, A8, A9, A10, A11, 0) Then Exit Sub
-      PortName$ = GetPortString(PortType&)
+      PortName$ = GetPortStringEx(PortType&)
    End If
    'If Port% Mod 4 = 0 Then txtScript.Text = txtScript.Text & vbCrLf
    'txtScript.Text = txtScript.Text & PortName$ & "  " & Format(DataValue%, "0") & "     "

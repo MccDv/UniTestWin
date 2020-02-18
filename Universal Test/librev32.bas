@@ -200,7 +200,7 @@ Sub MyCallbackFunc(ByVal BoardNum As Integer, ByVal EventType As Long, ByVal Eve
          "  Port Value = " & Str(ValueOfPort&) & Chr$(13) & Chr$(10)
          'FormRef.Controls("lblStatus").Caption = EventString$
          TextList EventString$
-         FormRef.Controls("lblStatus").Caption = "Event OnChangeDI at " & GetPortString(TypeOfPort&) & _
+         FormRef.Controls("lblStatus").Caption = "Event OnChangeDI at " & GetPortStringEx(TypeOfPort&) & _
          " to value of " & Format$(ValueOfPort&, "0") & "."
    End Select
 

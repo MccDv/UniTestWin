@@ -2173,7 +2173,7 @@ Sub SetDetails(FunctionType As Integer, Param1 As Variant, Param2 As Variant, Pa
          frmPlot.picDetails.Print "TotalCount " & Param1
       Case CFreqIn
       Case DInScan, DOutScan
-         PortName$ = GetPortString(CInt(Param1))
+         PortName$ = GetPortStringEx(CInt(Param1))
          frmPlot.picDetails.Cls
          frmPlot.picDetails.Print msDetail
          frmPlot.picDetails.Print Param6  'board name and number

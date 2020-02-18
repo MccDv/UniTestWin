@@ -1586,6 +1586,11 @@ Private Sub A_In()
    UseWinAPI% = Not mnuULBuf.Checked
    If mnuScale(5).Checked Then VOpt& = 1
    
+   If mnuToEng.Checked Then ConvertToReal% = True
+   If (mnuPlotType(SINGLE_POINT).Checked Or Me.mnuCal.Checked) Then PlotSinglePoints% = True
+   If mnuPlotType(PLOT_CHUNKS).Checked Then PlotChunks% = True
+   StoreReal% = (mnFuncType = TIn) Or (mnFuncType = TInScan) Or (mnFuncType = VIn) 'Or ConvertToReal%
+   
    If mlQCount > 0 Then
       NumChans% = mlQCount - 1
       NumberOfChannels% = mlQCount
@@ -1594,6 +1599,16 @@ Private Sub A_In()
       NumberOfChannels% = NumChans% + 1
       If NumberOfChannels% = 0 Then NumberOfChannels% = 1
    End If
+   If PlotChunks% Then
+      chanResidual% = mlCount Mod NumberOfChannels%
+      If chanResidual% <> 0 Then
+         MsgBox "Count must be a multiple of number of channels.", vbExclamation, "Bad Count"
+         stnInProgress = False
+         'mnSemaphore = False
+         Exit Sub
+      End If
+   End If
+   
    PerChan& = mlCount \ NumberOfChannels%
    If PerChan& = 0 Then PerChan& = 1
    mlTotalCountReturn = PerChan& * NumberOfChannels%
@@ -1609,11 +1624,6 @@ Private Sub A_In()
       mlHandle = 0: mnAcqDataType = vbEmpty
       mlAcqPoints = 0
    End If
-   
-   If mnuToEng.Checked Then ConvertToReal% = True
-   If (mnuPlotType(SINGLE_POINT).Checked Or Me.mnuCal.Checked) Then PlotSinglePoints% = True
-   If mnuPlotType(PLOT_CHUNKS).Checked Then PlotChunks% = True
-   StoreReal% = (mnFuncType = TIn) Or (mnFuncType = TInScan) Or (mnFuncType = VIn) 'Or ConvertToReal%
    
    'allocate a buffer
    If StoreReal% Or mnuCal.Checked Then

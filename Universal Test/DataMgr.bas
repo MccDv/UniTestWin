@@ -454,6 +454,7 @@ Optional FirstPoint As Long = 0, Optional UseWinAPI As Integer = 0) As Long
       DataType = mlDataType
    End If
    PerChan& = CBCount / NumberOfChans
+   If PerChan& = 0 Then PerChan& = 1
    BufPerChan& = BufferSize& / NumberOfChans
    If BufferSize& < NumberOfChans Then
       MsgBox "Insufficient samples to fill channels. Requesting " & _
@@ -505,7 +506,7 @@ Optional FirstPoint As Long = 0, Optional UseWinAPI As Integer = 0) As Long
       LastChan% = NumberOfChans - 1
    Else
       FirstChan% = Channel
-      LastChan% = Channel
+      LastChan% = (Channel + CBCount) - 1
    End If
    Direction% = 1
    If (Cycles = 0) Then

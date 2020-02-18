@@ -7645,7 +7645,7 @@ Private Sub OpenTestOptionsForm()
             PortArray = Split(PortList$, ";")
             NumPorts& = UBound(PortArray)
             PortNum& = Val(PortArray(0))
-            PortName$ = GetPortString(PortNum&)
+            PortName$ = GetPortStringEx(PortNum&)
             frmTestOptions.chkSE(0).Caption = PortName$
             HorizPos& = frmTestOptions.chkSE(0).Left
             'TopOffset& = frmTestOptions.chkSE(0).Top
@@ -7656,7 +7656,7 @@ Private Sub OpenTestOptionsForm()
                frmTestOptions.chkSE(ArrayItem&).Top = TopVal&
                VertPos& = VertPos& + 1
                PortNum& = Val(PortArray(ArrayItem&))
-               PortName$ = GetPortString(PortNum&)
+               PortName$ = GetPortStringEx(PortNum&)
                frmTestOptions.chkSE(ArrayItem&).Left = HorizPos&
                frmTestOptions.chkSE(ArrayItem&).Caption = PortName$
                frmTestOptions.chkSE(ArrayItem&).Visible = True
